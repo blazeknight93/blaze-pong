@@ -1,0 +1,150 @@
+/* Reset styles */
+html, body, ul {
+    margin: 0;
+    padding: 0;
+}
+
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+/* Header styles */
+header {
+    background-color: #f9f9f9;
+    padding: 20px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo img {
+    width: 80px;
+    height: 80px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333333;
+}
+
+/* Hero section styles */
+#hero {
+    background-color: #333333;
+    padding: 100px 0;
+    color: #ffffff;
+}
+
+.hero-text h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero-text h2 {
+    font-size: 24px;
+    margin-bottom: 40px;
+}
+
+.hero-text p {
+    font-size: 18px;
+    max-width: 600px;
+}
+
+/* About section styles */
+#about {
+    padding: 80px 0;
+    background-color: #f9f9f9;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile img {
+    width: 300px;
+    height: 300px;
+    margin-right: 40px;
+}
+
+/* Footer styles */
+footer {
+    background-color: #333333;
+    padding: 20px 0;
+    color: #ffffff;
+    text-align: center;
+}
+
+footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* Media queries */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .hero-text {
+        text-align: center;
+    }
+
+    .profile {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile img {
+        margin-bottom: 20px;
+    }
+}
+
+canvas {
+  border: 2px solid #fff;
+}
+
+/* Paddle Styles */
+.paddle {
+  position: absolute;
+  width: 10px;
+  height: 80px;
+  background-color: #fff;
+}
+
+/* Ball Styles */
+.ball {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+/* Game Info Styles */
+.game-info {
+  text-align: center;
+  color: #fff;
+  font-size: 20px;
+}
