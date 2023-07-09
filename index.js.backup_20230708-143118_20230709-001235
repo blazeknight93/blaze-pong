@@ -25,7 +25,7 @@ let default_Ballspeed = 1.25;
 let speed_multiplier = 1.1;
 
 // AI Variables
-let aiSuccessRate = 0.55; // Default success rate for AI paddle
+let aiSuccessRate = 0.35; // Default success rate for AI paddle
 
 // Paddle Objects
 const player1 = {

@@ -13,20 +13,6 @@ const aiDifficulty = "easy"; // AI difficulty level (easy, medium, hard)
 canvas.width = 800; // Double the current width
 canvas.height = 459; // Double the current height
 
-// Game Variables
-let gameStarted = false;
-let gamePaused = false;
-let player1Score = 0;
-let player2Score = 0;
-let maxScore = 11;
-let winningMargin = 2;
-let gameMode = "single";
-let default_Ballspeed = 1.25;
-let speed_multiplier = 1.1;
-
-// AI Variables
-let aiSuccessRate = 0.55; // Default success rate for AI paddle
-
 // Paddle Objects
 const player1 = {
   x: 0,
@@ -51,13 +37,23 @@ const ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   radius: ballRadius,
-  speed: default_Ballspeed,
+  speed: 4,
   dx: 4,
   dy: 4,
   color: "#fff",
 };
 
+// Game Variables
+let gameStarted = false;
+let gamePaused = false;
+let player1Score = 0;
+let player2Score = 0;
+let maxScore = 11;
+let winningMargin = 2;
+let gameMode = "single";
 
+// AI Variables
+let aiSuccessRate = 0.35; // Default success rate for AI paddle
 
 // Event Listeners
 document.addEventListener("keydown", handleKeyDown);
@@ -173,14 +169,15 @@ function updateAIPaddle() {
 function resetBall() {
   ball.x = canvas.width / 2;
   ball.y = canvas.height / 2;
-  ball.speed = default_Ballspeed;
+  ball.speed = 4;
   ball.dx *= -1;
   ball.dy *= Math.random() < 0.5 ? -1 : 1;
 }
 
+// Function to update ball's position
 function updateBall() {
-  ball.x += ball.dx * ball.speed;
-  ball.y += ball.dy * ball.speed;
+  ball.x += ball.dx;
+  ball.y += ball.dy;
 
   // Check for collision with paddles
   if (
@@ -190,7 +187,7 @@ function updateBall() {
   ) {
     if (ball.x - ball.radius < player1.x + player1.width) {
       ball.dx *= -1;
-      ball.speed *= speed_multiplier; // Increase ball speed on return
+      ball.speed *= 1.25; // Increase ball speed on return
     }
   }
 
@@ -201,17 +198,15 @@ function updateBall() {
   ) {
     if (ball.x + ball.radius > player2.x) {
       ball.dx *= -1;
-      ball.speed *= speed_multiplier; // Increase ball speed on return
+      ball.speed *= 1.25; // Increase ball speed on return
     }
-  }
+   }
 
   // Check for collision with top and bottom walls
   if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
     ball.dy *= -1;
   }
 }
-
-
 
 // Function to handle collision and score updates
 function handleCollision() {

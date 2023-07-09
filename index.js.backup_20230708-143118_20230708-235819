@@ -21,11 +21,7 @@ let player2Score = 0;
 let maxScore = 11;
 let winningMargin = 2;
 let gameMode = "single";
-let default_Ballspeed = 1.25;
-let speed_multiplier = 1.1;
-
-// AI Variables
-let aiSuccessRate = 0.55; // Default success rate for AI paddle
+let default_Ballspeed = 1;
 
 // Paddle Objects
 const player1 = {
@@ -57,7 +53,8 @@ const ball = {
   color: "#fff",
 };
 
-
+// AI Variables
+let aiSuccessRate = 0.35; // Default success rate for AI paddle
 
 // Event Listeners
 document.addEventListener("keydown", handleKeyDown);
@@ -190,7 +187,7 @@ function updateBall() {
   ) {
     if (ball.x - ball.radius < player1.x + player1.width) {
       ball.dx *= -1;
-      ball.speed *= speed_multiplier; // Increase ball speed on return
+      ball.speed *= 1.25; // Increase ball speed on return
     }
   }
 
@@ -201,7 +198,7 @@ function updateBall() {
   ) {
     if (ball.x + ball.radius > player2.x) {
       ball.dx *= -1;
-      ball.speed *= speed_multiplier; // Increase ball speed on return
+      ball.speed *= 1.25; // Increase ball speed on return
     }
   }
 

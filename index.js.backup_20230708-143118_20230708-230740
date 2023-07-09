@@ -13,20 +13,6 @@ const aiDifficulty = "easy"; // AI difficulty level (easy, medium, hard)
 canvas.width = 800; // Double the current width
 canvas.height = 459; // Double the current height
 
-// Game Variables
-let gameStarted = false;
-let gamePaused = false;
-let player1Score = 0;
-let player2Score = 0;
-let maxScore = 11;
-let winningMargin = 2;
-let gameMode = "single";
-let default_Ballspeed = 1.25;
-let speed_multiplier = 1.1;
-
-// AI Variables
-let aiSuccessRate = 0.55; // Default success rate for AI paddle
-
 // Paddle Objects
 const player1 = {
   x: 0,
@@ -51,13 +37,23 @@ const ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   radius: ballRadius,
-  speed: default_Ballspeed,
+  speed: 6,
   dx: 4,
   dy: 4,
   color: "#fff",
 };
 
+// Game Variables
+let gameStarted = false;
+let gamePaused = false;
+let player1Score = 0;
+let player2Score = 0;
+let maxScore = 11;
+let winningMargin = 2;
+let gameMode = "single";
 
+// AI Variables
+let aiSuccessRate = 0.35; // Default success rate for AI paddle
 
 // Event Listeners
 document.addEventListener("keydown", handleKeyDown);
@@ -173,11 +169,12 @@ function updateAIPaddle() {
 function resetBall() {
   ball.x = canvas.width / 2;
   ball.y = canvas.height / 2;
-  ball.speed = default_Ballspeed;
-  ball.dx *= -1;
-  ball.dy *= Math.random() < 0.5 ? -1 : 1;
+  ball.speed = 4;
+  ball.dx = 4;
+  ball.dy = 4;
 }
 
+// Function to update ball's position
 function updateBall() {
   ball.x += ball.dx * ball.speed;
   ball.y += ball.dy * ball.speed;
@@ -190,7 +187,7 @@ function updateBall() {
   ) {
     if (ball.x - ball.radius < player1.x + player1.width) {
       ball.dx *= -1;
-      ball.speed *= speed_multiplier; // Increase ball speed on return
+      ball.speed *= 1.1; // Increase ball speed on return
     }
   }
 
@@ -201,17 +198,15 @@ function updateBall() {
   ) {
     if (ball.x + ball.radius > player2.x) {
       ball.dx *= -1;
-      ball.speed *= speed_multiplier; // Increase ball speed on return
+      ball.speed *= 1.1; // Increase ball speed on return
     }
   }
 
-  // Check for collision with top and bottom walls
+  // Checkfor collision with top and bottom walls
   if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
     ball.dy *= -1;
   }
 }
-
-
 
 // Function to handle collision and score updates
 function handleCollision() {
@@ -226,7 +221,6 @@ function handleCollision() {
     resetAI();
   }
 }
-
 
 // Function to reset the game
 function resetGame() {
@@ -260,76 +254,65 @@ function update() {
   } else if (gamePaused) {
     context.fillStyle = "#fff";
     context.font = "30px Arial";
-    context.fillText(
-      "Paused",
-      canvas.width / 2 - 50,
-      canvas.height / 2
-    );
+    context.fillText("Paused", canvas.width / 2 - 50, canvas.height / 2);
   } else {
     updatePaddle(player1);
     updatePaddle(player2);
     updateBall();
     handleCollision();
-    const gameOverMessage = checkGameOver();
 
-    if (gameOverMessage) {
-      context.fillStyle = "#fff";
-      context.font = "30px Arial";
+    context.fillStyle = player1.color;
+    context.fillRect(player1.x, player1.y, player1.width, player1.height);
+
+    context.fillStyle = player2.color;
+    context.fillRect(player2.x, player2.y, player2.width, player2.height);
+
+    context.fillStyle = ball.color;
+    context.beginPath();
+    context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    context.closePath();
+    context.fill();
+
+    context.fillStyle = "#fff";
+    context.font = "30px Arial";
+    context.fillText(player1Score, canvas.width / 2 - 50, 50);
+    context.fillText(player2Score, canvas.width / 2 + 25, 50);
+
+    if (
+      player1Score >= maxScore &&
+      player1Score - player2Score >= winningMargin
+    ) {
       context.fillText(
-        gameOverMessage,
+        "Player 1 Wins!",
         canvas.width / 2 - 120,
         canvas.height / 2
       );
-
       context.font = "20px Arial";
       context.fillText(
         "Press Space to Play Again",
         canvas.width / 2 - 130,
         canvas.height / 2 + 50
       );
-    } else {
-      updateAIPaddle();
-      context.fillStyle = player1.color;
-      context.fillRect(player1.x, player1.y, player1.width, player1.height);
-
-      context.fillStyle = player2.color;
-      context.fillRect(player2.x, player2.y, player2.width, player2.height);
-
-      context.fillStyle = ball.color;
-      context.beginPath();
-      context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-      context.closePath();
-      context.fill();
-
-      context.fillStyle = "#fff";
-      context.font = "30px Arial";
-      context.fillText(player1Score, canvas.width / 2 - 50, 50);
-      context.fillText(player2Score, canvas.width / 2 + 25, 50);
+    } else if (
+      player2Score >= maxScore &&
+      player2Score - player1Score >= winningMargin
+    ) {
+      context.fillText(
+        "Player 2 Wins!",
+        canvas.width / 2 - 120,
+        canvas.height / 2
+      );
+      context.font = "20px Arial";
+      context.fillText(
+        "Press Space to Play Again",
+        canvas.width / 2 - 130,
+        canvas.height / 2 + 50
+      );
     }
   }
 
   requestAnimationFrame(update);
 }
-
-
-// Function to check for game over
-function checkGameOver() {
-  if (
-    (player1Score >= maxScore &&
-      player1Score - player2Score >= winningMargin) ||
-    (player2Score >= maxScore &&
-      player2Score - player1Score >= winningMargin)
-  ) {
-    if (player1Score > player2Score) {
-      return "Player 1 wins!";
-    } else {
-      return "Player 2 wins!";
-    }
-  } else {
-    return null;
-  }
-}
-
 
 // Function to start the game
 function startGame() {
@@ -343,7 +326,6 @@ function startGame() {
 function handleSpaceBar() {
   if (!gameStarted || player1Score >= maxScore || player2Score >= maxScore) {
     resetGame();
-    resetBall();
     startGame();
   }
 }

@@ -21,11 +21,11 @@ let player2Score = 0;
 let maxScore = 11;
 let winningMargin = 2;
 let gameMode = "single";
-let default_Ballspeed = 1.25;
+let default_Ballspeed = 2;
 let speed_multiplier = 1.1;
 
 // AI Variables
-let aiSuccessRate = 0.55; // Default success rate for AI paddle
+let aiSuccessRate = 0.35; // Default success rate for AI paddle
 
 // Paddle Objects
 const player1 = {
