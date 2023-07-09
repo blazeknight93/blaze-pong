@@ -13,6 +13,20 @@ const aiDifficulty = "easy"; // AI difficulty level (easy, medium, hard)
 canvas.width = 800; // Double the current width
 canvas.height = 459; // Double the current height
 
+// Game Variables
+let gameStarted = false;
+let gamePaused = false;
+let player1Score = 0;
+let player2Score = 0;
+let maxScore = 11;
+let winningMargin = 2;
+let gameMode = "single";
+let default_Ballspeed = 1.25;
+let speed_multiplier = 1.1;
+
+// AI Variables
+let aiSuccessRate = 0.55; // Default success rate for AI paddle
+
 // Paddle Objects
 const player1 = {
   x: 0,
@@ -28,7 +42,7 @@ const player2 = {
   y: canvas.height / 2 - paddleHeight / 2,
   width: paddleWidth,
   height: paddleHeight,
-  color: "blue",
+  color: "#0096FF",
   dy: 0,
 };
 
@@ -37,22 +51,13 @@ const ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   radius: ballRadius,
-  speed: 4,
+  speed: default_Ballspeed,
   dx: 4,
   dy: 4,
   color: "#fff",
 };
 
-// Game Variables
-let gameStarted = false;
-let player1Score = 0;
-let player2Score = 0;
-let maxScore = 11;
-let winningMargin = 2;
-let gameMode = "single";
 
-// AI Variables
-let aiSuccessRate = 0.35; // Default success rate for AI paddle
 
 // Event Listeners
 document.addEventListener("keydown", handleKeyDown);
@@ -80,6 +85,10 @@ function handleKeyDown(event) {
     } else if (event.key === player2Keys.down) {
       player2.dy = paddleSpeed;
     }
+  }
+  // Pause/unpause the game on "P" key press
+  if (event.key === "p" || event.key === "P") {
+    gamePaused = !gamePaused;
   }
 }
 
@@ -115,7 +124,6 @@ function updatePaddle(paddle) {
     paddle.y = canvas.height - paddle.height;
   }
 }
-
 
 // Function to update AI paddle's position
 function updateAIPaddle() {
@@ -161,24 +169,18 @@ function updateAIPaddle() {
   }
 }
 
-
-
 // Function to reset the ball's position and speed
 function resetBall() {
   ball.x = canvas.width / 2;
   ball.y = canvas.height / 2;
-  ball.speed = 4;
+  ball.speed = default_Ballspeed;
   ball.dx *= -1;
   ball.dy *= Math.random() < 0.5 ? -1 : 1;
 }
 
-
-
-
-// Function to update ball's position
 function updateBall() {
-  ball.x += ball.dx;
-  ball.y += ball.dy;
+  ball.x += ball.dx * ball.speed;
+  ball.y += ball.dy * ball.speed;
 
   // Check for collision with paddles
   if (
@@ -188,7 +190,7 @@ function updateBall() {
   ) {
     if (ball.x - ball.radius < player1.x + player1.width) {
       ball.dx *= -1;
-      ball.speed *= 1.25; // Increase ball speed on return
+      ball.speed *= speed_multiplier; // Increase ball speed on return
     }
   }
 
@@ -199,7 +201,7 @@ function updateBall() {
   ) {
     if (ball.x + ball.radius > player2.x) {
       ball.dx *= -1;
-      ball.speed *= 1.25; // Increase ball speed on return
+      ball.speed *= speed_multiplier; // Increase ball speed on return
     }
   }
 
@@ -208,9 +210,6 @@ function updateBall() {
     ball.dy *= -1;
   }
 }
-
-
-
 
 
 
@@ -228,23 +227,6 @@ function handleCollision() {
   }
 }
 
-// Function to check for game over
-function checkGameOver() {
-  if (
-    (player1Score >= maxScore &&
-      player1Score - player2Score >= winningMargin) ||
-    (player2Score >= maxScore &&
-      player2Score - player1Score >= winningMargin)
-  ) {
-    if (player1Score > player2Score) {
-      return "Player 1 wins!";
-    } else {
-      return "Player 2 wins!";
-    }
-  } else {
-    return null;
-  }
-}
 
 // Function to reset the game
 function resetGame() {
@@ -253,13 +235,8 @@ function resetGame() {
   resetBall();
   resetAI();
   gameStarted = false;
+  gamePaused = false;
 }
-
-
-
-
-
-
 
 // Function to reset the AI paddle's position
 function resetAI() {
@@ -269,13 +246,23 @@ function resetAI() {
 // Function to update the canvas
 function update() {
   context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#000";
+  context.fillRect(0, 0, canvas.width, canvas.height);
 
   if (!gameStarted) {
-    context.fillStyle = "#000";
+    context.fillStyle = "#fff";
     context.font = "30px Arial";
     context.fillText(
-      "Press Enter to Start",
+      "Press Space to Start",
       canvas.width / 2 - 130,
+      canvas.height / 2
+    );
+  } else if (gamePaused) {
+    context.fillStyle = "#fff";
+    context.font = "30px Arial";
+    context.fillText(
+      "Paused",
+      canvas.width / 2 - 50,
       canvas.height / 2
     );
   } else {
@@ -286,7 +273,7 @@ function update() {
     const gameOverMessage = checkGameOver();
 
     if (gameOverMessage) {
-      context.fillStyle = "#000";
+      context.fillStyle = "#fff";
       context.font = "30px Arial";
       context.fillText(
         gameOverMessage,
@@ -296,7 +283,7 @@ function update() {
 
       context.font = "20px Arial";
       context.fillText(
-        "Press Enter to Play Again",
+        "Press Space to Play Again",
         canvas.width / 2 - 130,
         canvas.height / 2 + 50
       );
@@ -324,6 +311,26 @@ function update() {
   requestAnimationFrame(update);
 }
 
+
+// Function to check for game over
+function checkGameOver() {
+  if (
+    (player1Score >= maxScore &&
+      player1Score - player2Score >= winningMargin) ||
+    (player2Score >= maxScore &&
+      player2Score - player1Score >= winningMargin)
+  ) {
+    if (player1Score > player2Score) {
+      return "Player 1 wins!";
+    } else {
+      return "Player 2 wins!";
+    }
+  } else {
+    return null;
+  }
+}
+
+
 // Function to start the game
 function startGame() {
   if (!gameStarted) {
@@ -332,22 +339,22 @@ function startGame() {
   }
 }
 
-// Function to handle the Enter key press
-function handleEnterKey() {
-  if (!gameStarted) {
+// Function to handle the Space bar press
+function handleSpaceBar() {
+  if (!gameStarted || player1Score >= maxScore || player2Score >= maxScore) {
     resetGame();
+    resetBall();
     startGame();
   }
 }
 
-// Event listener to start the game on Enter key press
+// Event listener to start the game on Space bar press
 document.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    handleEnterKey();
+  if (event.key === " ") {
+    handleSpaceBar();
   }
 });
 
 // Initialize the game
 resetGame();
-startGame();
 
